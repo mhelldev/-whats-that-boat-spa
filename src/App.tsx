@@ -1,10 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { MapContainer, TileLayer, useMap } from 'react-leaflet'
+import {MapContainer, Marker, TileLayer, useMap} from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
 
+interface Vessel {
+    SHIPNAME: 'string'
+    SHIP_ID: 'string'
+    LAT: 'string'
+    LON: 'string'
+}
+
 function App() {
+  const [vessels, setVessels] = useState<Vessel[]>([])
   useEffect(() => {
 
       const timeframe = [60, 525600];
@@ -20,19 +28,23 @@ function App() {
           },
 
       }).then(res =>
-      {res.json().then((json) => console.log(json))}
+      {res.json().then((json) => setVessels(json.data))}
     )
 
 
   }, [])
 
+
+    vessels.forEach(vessel => console.log(vessel))
   return (
     <div className="App">
-      <MapContainer center={[51.505, -0.09]} zoom={13} scrollWheelZoom={false}>
+      <MapContainer center={[51.3023, 6.7355]} zoom={13} scrollWheelZoom={false}>
         <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+          {vessels.map(vessel => <Marker position={[parseFloat(vessel.LAT), parseFloat(vessel.LON)]}></Marker>)}
+
       </MapContainer>
     </div>
   );
